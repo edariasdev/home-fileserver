@@ -1,0 +1,50 @@
+version: "3.6"
+services:
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    restart: always
+    command: -H unix:///var/run/docker.sock
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${USERDIR}/docker/portainer/data:/data
+      - ${USERDIR}/docker/shared:/shared
+    environment:
+      - TZ=${TZ}
+      - PORTAINER_ADMIN_NAME=admin
+      - PORTAINER_ADMIN_PASS=admin
+
+  filebrowser:
+    container_name: filebrowser
+    image: filebrowser/filebrowser
+    ports:
+      - "8080:80"
+    volumes:
+      - ${USERDIR}/docker/nextcloud/shared_data:/srv 
+      - ${USERDIR}/docker/filebrowser/filebrowser.db:/database/database.db
+      - ${USERDIR}/docker/filebrowser/filebrowser.json:/.filebrowser.json
+    restart: always
+
+  watchtower:
+    container_name: watchtower
+    restart: always
+    image: v2tec/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 4 * * *" --cleanup
+
+  nextcloud:
+    container_name: nextcloud
+    restart: always
+    image: linuxserver/nextcloud
+    volumes:
+      - ${USERDIR}/docker/nextcloud:/config
+      - ${USERDIR}/docker/nextcloud/shared_data:/data
+      - ${USERDIR}/docker/filebrowser:/shared
+    ports:
+      - "4343:443"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
