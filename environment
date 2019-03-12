@@ -1,0 +1,9 @@
+#PUID - select your user ID
+PUID=1000
+#PGID - select the docker ID
+PGID=982
+#Select your TZ Database Name from: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+TZ="America/Chicago"
+USERDIR="/home/userdir.you.want.to.use"
+MYSQL_ROOT_PASSWORD="password.you.want.to.use" #Used if you install MariaDB/PhpMyAdmin; \
+#not the case with this compose file (delete if you want)
