@@ -1,15 +1,29 @@
-version: "3.6"
+version: '3.8'
 services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
   filebrowser:
     container_name: filebrowser
-    image: filebrowser/filebrowser
+    image: hurlenko/filebrowser
+    user: "${UID}:${GID}"
     ports:
-      - "8080:80"
+      - "80:8080"
     volumes:
-      - ${USERDIR}/docker/filebrowser/filebrowser.db:/database/database.db
-      - ${USERDIR}/docker/filebrowser/filebrowser.json:/.filebrowser.json
+      - /data/docker/filebrowser/:/database/database.db
+      - /data/docker/filebrowser/:/.filebrowser.json
+      - /data/docker/filebrowser/data/:/data
+    environment:
+      - FB_BASEURL=/filebrowser
     restart: always
-
   watchtower:
     container_name: watchtower
     restart: always
@@ -17,3 +31,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --schedule "0 0 4 * * *" --cleanup
+volumes:
+  portainer_data:
+
